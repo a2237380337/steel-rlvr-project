@@ -1,0 +1,8 @@
+source,method,pass1_mae,pass1_r2,pass2_mae,pass2_r2,pass3_mae,pass3_r2
+CAC-submitted-paper,XGBoost,0.666,-0.124,0.541,0.189,0.486,0.297
+CAC-submitted-paper,LightGBM,0.662,-0.103,0.509,0.299,0.463,0.374
+CAC-submitted-paper,MLP,0.605,0.071,0.507,0.266,0.424,0.444
+CAC-submitted-paper,Fuzzy-Logic,0.653,-0.075,0.490,0.315,0.463,0.348
+CAC-submitted-paper,FT-Transformer,0.694,-0.153,0.555,0.096,0.501,0.277
+CAC-submitted-paper,FT-Transformer-Pretrain-Finetune,0.667,-0.076,0.574,0.053,0.525,0.247
+CAC-submitted-paper,KD-Steel,0.511,0.338,0.445,0.397,0.374,0.575

@@ -1,0 +1,25 @@
+# Private or generated data
+data/processed/
+*.xlsx
+*.xls
+*.xlsm
+*.parquet
+
+# Private/generated experiment artifacts. Public aggregate results live under
+# results/ and reports/ instead of this directory.
+artifacts/
+
+# Only the reviewed aggregate matrix is publishable. Per-sample predictions,
+# ad-hoc exports and temporary result files remain local.
+results/*
+!results/README.md
+!results/formal_evaluation_matrix.json
+
+# Python/build caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/

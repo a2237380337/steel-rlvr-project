@@ -1,0 +1,37 @@
+# Pipeline-only configuration; never quote its metrics in the resume.
+model_name_or_path: artifacts/checkpoints/sft-smoke
+model_revision: a9a407bcae463285164cc9133995c515379cebe5
+mixed_precision: bf16
+local_files_only: true
+train_file: data/processed/train.jsonl
+data_report_file: data/processed/data_report.json
+max_samples: 64
+output_dir: artifacts/checkpoints/grpo-smoke
+
+max_prompt_length: 512
+max_completion_length: 64
+max_steps: 10
+num_generations: 4
+gradient_accumulation_steps: 4
+learning_rate: 1.0e-6
+warmup_ratio: 0.0
+lr_scheduler_type: constant
+max_grad_norm: 1.0
+temperature: 0.7
+beta: 0.0
+loss_type: dr_grpo
+scale_rewards: false
+reward_weights: [1.0, 0.05, 0.05]
+logging_steps: 1
+save_steps: 10
+save_total_limit: 1
+num_completions_to_print: 2
+reward_zero_std_patience: 5
+
+lora_r: 8
+lora_alpha: 16
+lora_dropout: 0.05
+tail_aware: false
+tail_reference_frequency: 200
+tail_max_weight: 2.0
+seed: 42

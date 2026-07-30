@@ -1,0 +1,14 @@
+# Override --model and --output-dir for each candidate checkpoint.
+model_or_checkpoint: artifacts/checkpoints/sft-main
+model_revision: a9a407bcae463285164cc9133995c515379cebe5
+mixed_precision: bf16
+local_files_only: true
+split_file: data/processed/validation.jsonl
+data_report_file: data/processed/data_report.json
+output_dir: artifacts/evals/validation-placeholder
+max_samples: 1020
+max_new_tokens: 128
+batch_size: 4
+logging_interval: 60
+balanced_by_pass: true
+seed: 42

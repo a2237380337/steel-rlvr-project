@@ -1,0 +1,18 @@
+# Install the official ROCm PyTorch 2.9.1 wheels before this file. Never
+# replace them with a PyPI CUDA build.
+accelerate>=1.11
+datasets>=4.0
+huggingface-hub>=0.34
+openpyxl>=3.1
+pandas>=2.2
+peft>=0.17
+pillow>=11.0
+pyyaml>=6.0
+scikit-learn>=1.5
+# Qwen3.5 needs the current Transformers implementation. The environment
+# snapshot records the resolved Git commit for every formal experiment.
+transformers @ git+https://github.com/huggingface/transformers.git@main
+trl==1.9.2
+torchvision>=0.24
+pytest>=8.0
+ruff>=0.9

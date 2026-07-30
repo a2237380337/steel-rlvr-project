@@ -1,0 +1,14 @@
+# Alias for the proposed method's formal test evaluation.
+model_or_checkpoint: artifacts/checkpoints/grpo-tail-aware
+model_revision: a9a407bcae463285164cc9133995c515379cebe5
+mixed_precision: bf16
+local_files_only: true
+split_file: data/processed/test.jsonl
+data_report_file: data/processed/data_report.json
+output_dir: artifacts/evals/tail-aware
+max_samples: 1017
+max_new_tokens: 128
+batch_size: 4
+logging_interval: 60
+balanced_by_pass: true
+seed: 42
