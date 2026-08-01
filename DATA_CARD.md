@@ -34,6 +34,7 @@ a pass may use only measurements that would already be available at that point.
 | Validation source records | 6,796 |
 | Test source records | 339 |
 | Train/validation/test pass samples | 81,546 / 20,388 / 1,017 |
+| Train/validation preference pairs | 81,546 / 20,388 |
 
 The excluded row contained `Slab_ID` as its slab identifier and `Steel_Grade`
 as its category value. It was classified as a template record from field
@@ -54,12 +55,15 @@ JSONL files byte-identical:
 2. Common-grade source records are split 8:2 with seed 42. All three pass
    prompts from one source record stay in the same split.
 3. Train-only labels determine target medians, MAD scales, 1st/99th percentile
-   physical bounds and tail-aware grade frequencies.
-4. Test labels do not affect SFT, reward computation, normalization,
+   physical bounds and DPO sampling frequencies.
+4. Each preference pair keeps chosen/rejected formatting identical. The chosen
+   value is the observed train/validation target; the rejected value is shifted
+   by 0.5, 1.0 or 1.5 train-MAD units. No test pair is constructed.
+5. Test labels do not affect SFT, preference construction, normalization,
    checkpoint selection or physical bounds.
-5. Pass1/Pass2/Pass3 schemas explicitly prevent later-pass measurements from
+6. Pass1/Pass2/Pass3 schemas explicitly prevent later-pass measurements from
    appearing in an earlier-pass prompt.
-6. Formal data preparation fails unless the audited counts match. Non-paper
+7. Formal data preparation fails unless the audited counts match. Non-paper
    synthetic data requires the explicit `--allow-contract-mismatch` flag.
 
 ## Published fields

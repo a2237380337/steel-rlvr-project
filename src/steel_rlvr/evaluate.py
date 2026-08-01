@@ -22,8 +22,8 @@ from .io_utils import (
     verify_reported_file,
 )
 from .metrics import group_mae, mean_absolute_error, pass_grade_keys, r2_score
+from .output_parsing import parse_prediction_detail
 from .policy_loading import load_text_policy
-from .reward import parse_prediction_detail
 from .sampling import select_balanced
 from .training_logging import require_fresh_output_dir
 

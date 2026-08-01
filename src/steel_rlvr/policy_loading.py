@@ -29,15 +29,25 @@ def load_text_policy(
     mixed_precision: str,
     local_files_only: bool,
 ):
+    from huggingface_hub import snapshot_download
     from transformers import AutoModelForMultimodalLM, AutoTokenizer
 
     base_model, base_revision, is_adapter = resolve_policy_source(
         model_or_checkpoint,
         revision,
     )
+    model_source = (
+        snapshot_download(
+            repo_id=base_model,
+            revision=base_revision,
+            local_files_only=True,
+        )
+        if local_files_only and not Path(base_model).exists()
+        else base_model
+    )
     model = AutoModelForMultimodalLM.from_pretrained(
-        base_model,
-        revision=base_revision,
+        model_source,
+        revision=None if model_source != base_model else base_revision,
         dtype=torch_dtype(mixed_precision),
         attn_implementation="sdpa",
         local_files_only=local_files_only,
@@ -51,8 +61,8 @@ def load_text_policy(
             is_trainable=trainable_adapter,
         )
     tokenizer = AutoTokenizer.from_pretrained(
-        base_model,
-        revision=base_revision,
+        model_source,
+        revision=None if model_source != base_model else base_revision,
         local_files_only=local_files_only,
     )
     if tokenizer.pad_token_id is None:

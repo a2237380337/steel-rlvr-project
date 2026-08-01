@@ -1,0 +1,29 @@
+model_name_or_path: artifacts/checkpoints/sft-main
+model_revision: a9a407bcae463285164cc9133995c515379cebe5
+mixed_precision: bf16
+local_files_only: true
+
+train_file: data/processed/preferences_train.jsonl
+validation_file: data/processed/preferences_validation.jsonl
+preference_report_file: data/processed/preference_report.json
+max_samples: 12
+validation_max_samples: 6
+output_dir: artifacts/checkpoints/dpo-smoke
+
+max_length: 896
+max_steps: 2
+gradient_accumulation_steps: 1
+learning_rate: 1.0e-6
+warmup_ratio: 0.0
+lr_scheduler_type: cosine
+weight_decay: 0.01
+max_grad_norm: 1.0
+beta: 0.1
+loss_type: sigmoid
+logging_steps: 1
+eval_steps: 1
+save_steps: 1
+save_total_limit: 1
+
+tail_aware_sampling: false
+seed: 42

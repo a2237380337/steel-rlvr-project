@@ -11,8 +11,9 @@ fi
 
 bash scripts/capture_environment.sh formal-before-training
 bash scripts/prepare_data.sh
+bash scripts/build_preferences.sh
 bash scripts/run_sft_main.sh
-bash scripts/run_grpo_baseline.sh
-bash scripts/run_grpo_tail_aware.sh
+bash scripts/run_dpo_baseline.sh
+bash scripts/run_dpo_tail_aware.sh
 bash scripts/run_all_evals.sh
 bash scripts/capture_environment.sh formal-after-evaluation

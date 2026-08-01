@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "steel-rlvr-project"
-version = "0.2.0"
-description = "Tail-aware RLVR for low-frequency steel leveling with Qwen3.5"
+version = "0.3.0"
+description = "Frequency-aware DPO for low-frequency steel leveling with Qwen3.5"
 requires-python = ">=3.10"
 dependencies = ["PyYAML>=6.0"]
 

@@ -41,14 +41,14 @@ def test_matrix_requires_identical_test_artifact() -> None:
         build_matrix({"base": first, "sft": second})
 
 
-def test_matrix_reports_controlled_tail_delta() -> None:
+def test_matrix_reports_controlled_frequency_aware_delta() -> None:
     result = build_matrix(
         {
             "base": _summary("base", 1.2),
             "sft": _summary("sft", 1.0),
-            "drgrpo": _summary("dr", 0.9),
-            "tail_aware": _summary("tail", 0.8),
+            "dpo": _summary("dpo", 0.9),
+            "frequency_aware_dpo": _summary("frequency-aware", 0.8),
         }
     )
     assert result["complete"] is True
-    assert result["comparisons"]["tail_aware_minus_drgrpo"]["macro_mae"] == pytest.approx(-0.1)
+    assert result["comparisons"]["frequency_aware_dpo_minus_dpo"]["macro_mae"] == pytest.approx(-0.1)

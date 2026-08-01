@@ -1,4 +1,4 @@
-"""Combine Base/SFT/Dr. GRPO/tail-aware summaries without inventing results."""
+"""Combine Base/SFT/DPO/frequency-aware DPO evaluation summaries."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from typing import Any
 
 from .io_utils import atomic_write_json
 
-REQUIRED_LABELS = ("base", "sft", "drgrpo", "tail_aware")
+REQUIRED_LABELS = ("base", "sft", "dpo", "frequency_aware_dpo")
 
 
 def build_matrix(summaries: dict[str, dict[str, Any]]) -> dict[str, Any]:
@@ -54,14 +54,18 @@ def build_matrix(summaries: dict[str, dict[str, Any]]) -> dict[str, Any]:
             "peak_memory_mib": summary["hardware"]["peak_memory_mib"],
         }
     comparisons: dict[str, Any] = {}
-    if "drgrpo" in rows and "tail_aware" in rows:
-        standard = rows["drgrpo"]
-        tail = rows["tail_aware"]
-        comparisons["tail_aware_minus_drgrpo"] = {
-            "mae": tail["mae"] - standard["mae"],
-            "macro_mae": tail["macro_mae"] - standard["macro_mae"],
-            "worst_group_mae": tail["worst_group_mae"] - standard["worst_group_mae"],
-            "strict_json_rate": tail["strict_json_rate"] - standard["strict_json_rate"],
+    if "dpo" in rows and "frequency_aware_dpo" in rows:
+        standard = rows["dpo"]
+        frequency_aware = rows["frequency_aware_dpo"]
+        comparisons["frequency_aware_dpo_minus_dpo"] = {
+            "mae": frequency_aware["mae"] - standard["mae"],
+            "macro_mae": frequency_aware["macro_mae"] - standard["macro_mae"],
+            "worst_group_mae": (
+                frequency_aware["worst_group_mae"] - standard["worst_group_mae"]
+            ),
+            "strict_json_rate": (
+                frequency_aware["strict_json_rate"] - standard["strict_json_rate"]
+            ),
         }
     return {
         "schema_version": 1,

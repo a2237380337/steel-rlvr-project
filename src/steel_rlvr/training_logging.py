@@ -1,4 +1,4 @@
-"""Durable run manifests and JSONL metric logs for SFT and GRPO."""
+"""Durable run manifests and JSONL metric logs for SFT and DPO."""
 
 from __future__ import annotations
 

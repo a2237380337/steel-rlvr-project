@@ -4,10 +4,10 @@ mixed_precision: bf16
 local_files_only: true
 split_file: data/processed/test.jsonl
 data_report_file: data/processed/data_report.json
-output_dir: artifacts/evals/sft
+output_dir: artifacts/evals-dpo/sft
 max_samples: 1017
-max_new_tokens: 128
-batch_size: 4
-logging_interval: 60
 balanced_by_pass: true
+max_new_tokens: 32
+batch_size: 16
+logging_interval: 96
 seed: 42

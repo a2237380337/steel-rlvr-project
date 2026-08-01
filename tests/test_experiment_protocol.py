@@ -21,37 +21,36 @@ def test_sft_main_protocol_is_fixed_and_rocm_safe() -> None:
     assert config["train_file"] != config["validation_file"]
 
 
-def test_baseline_and_tail_configs_only_change_output_and_weighting() -> None:
-    baseline = _config("grpo_baseline.yaml")
-    tail_aware = _config("grpo_tail_aware.yaml")
+def test_dpo_baseline_and_tail_configs_only_change_output_and_sampling() -> None:
+    baseline = _config("dpo_baseline.yaml")
+    tail_aware = _config("dpo_tail_aware.yaml")
     assert baseline["output_dir"] != tail_aware["output_dir"]
-    assert baseline["tail_aware"] is False
-    assert tail_aware["tail_aware"] is True
+    assert baseline["tail_aware_sampling"] is False
+    assert tail_aware["tail_aware_sampling"] is True
     controlled_baseline = {
         key: value
         for key, value in baseline.items()
-        if key not in {"output_dir", "tail_aware"}
+        if key not in {"output_dir", "tail_aware_sampling"}
     }
     controlled_tail = {
         key: value
         for key, value in tail_aware.items()
-        if key not in {"output_dir", "tail_aware"}
+        if key not in {"output_dir", "tail_aware_sampling"}
     }
     assert controlled_baseline == controlled_tail
-    assert baseline["loss_type"] == "dr_grpo"
-    assert baseline["scale_rewards"] is False
-    assert baseline["max_samples"] == 1500
+    assert baseline["loss_type"] == "sigmoid"
+    assert baseline["beta"] == 0.1
+    assert baseline["max_samples"] == 3000
     assert baseline["max_steps"] == 200
-    assert baseline["num_generations"] == 4
-    assert baseline["max_completion_length"] == 128
+    assert baseline["validation_max_samples"] == 768
 
 
 def test_formal_evaluations_share_one_test_contract() -> None:
     configs = [
-        _config("eval_base.yaml"),
-        _config("eval_sft.yaml"),
-        _config("eval_grpo_baseline.yaml"),
-        _config("eval_main.yaml"),
+        _config("eval_base_dpo_study.yaml"),
+        _config("eval_sft_dpo_study.yaml"),
+        _config("eval_dpo_baseline.yaml"),
+        _config("eval_dpo_tail_aware.yaml"),
     ]
     controlled = [
         "split_file",

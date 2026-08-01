@@ -1,4 +1,4 @@
-"""Render the formal result card from completed machine-readable artifacts."""
+"""Render the formal DPO result card from machine-readable artifacts."""
 
 from __future__ import annotations
 
@@ -11,8 +11,8 @@ from typing import Any
 LABELS = {
     "base": "Qwen3.5 Base",
     "sft": "LoRA-SFT",
-    "drgrpo": "SFT + Dr. GRPO",
-    "tail_aware": "SFT + Tail-aware Dr. GRPO",
+    "dpo": "SFT + DPO",
+    "frequency_aware_dpo": "SFT + 频次感知 DPO",
 }
 
 
@@ -30,6 +30,8 @@ def _relative_change(reference: float, candidate: float) -> float:
 
 
 def _change_phrase(value: float) -> str:
+    if abs(value) < 1e-12:
+        return "持平 0.00%"
     direction = "下降" if value < 0 else "上升"
     return f"{direction} {abs(value):.2f}%"
 
@@ -46,21 +48,20 @@ def build_markdown(
 ) -> str:
     if not matrix.get("complete"):
         raise ValueError(
-            "formal result card requires Base/SFT/DrGRPO/tail-aware evaluations; "
+            "formal result card requires Base/SFT/DPO/frequency-aware DPO evaluations; "
             f"missing {matrix.get('missing_labels')}"
         )
     models = matrix["models"]
     lines = [
         "# 项目 2 正式结果卡",
         "",
-        "> 本页只由 `summary.json` 自动生成，不接受手工填写或估算数字。",
+        "> 本页由四组 `summary.json` 自动生成，不手工填写或估算指标。",
         "",
         f"- 测试集 SHA256：`{matrix['split_sha256']}`",
         f"- 测试样本 ID SHA256：`{matrix['sample_ids_sha256']}`",
         f"- 评测源码 SHA256：`{matrix['source_tree_sha256']}`",
         f"- 测试对象：19 个训练阶段未见的低频钢种，共 {matrix['sample_count']} 条道次样本",
-        "- 数据审计：过滤 1 条钢种值为 `Steel_Grade`、板坯号为 `Slab_ID` 的占位记录",
-        "- 主指标：无效输出以训练集目标中位数回填后计入 MAE/R²",
+        "- 主指标：无效输出用训练集目标中位数回填后计入 MAE/R²",
         "- Macro-MAE：对 `道次 × 钢种` 分组 MAE 做等权平均",
         "",
         "| 方法 | 总体 MAE | P1 MAE / R² | P2 MAE / R² | P3 MAE / R² | Macro-MAE | Worst-group | JSON 合法率 |",
@@ -80,35 +81,41 @@ def build_markdown(
                 json_rate=f"{100 * float(row['strict_json_rate']):.1f}%",
             )
         )
+
     best_label = min(LABELS, key=lambda label: float(models[label]["mae"]))
     best = models[best_label]
     base = models["base"]
-    drgrpo = models["drgrpo"]
-    tail_aware = models["tail_aware"]
+    standard = models["dpo"]
+    frequency_aware = models["frequency_aware_dpo"]
     best_mae_change = _relative_change(base["mae"], best["mae"])
     best_worst_change = _relative_change(
-        base["worst_group_mae"],
-        best["worst_group_mae"],
+        base["worst_group_mae"], best["worst_group_mae"]
     )
-    tail_mae_change = _relative_change(drgrpo["mae"], tail_aware["mae"])
-    tail_macro_change = _relative_change(
-        drgrpo["macro_mae"],
-        tail_aware["macro_mae"],
-    )
-    tail_worst_change = _relative_change(
-        drgrpo["worst_group_mae"],
-        tail_aware["worst_group_mae"],
-    )
-    tail_dominates = all(
-        change <= 0
-        for change in (tail_mae_change, tail_macro_change, tail_worst_change)
-    )
-    tail_conclusion = (
-        "- 频次加权在预先指定的总体、Macro 和 Worst-group 三项误差上均优于"
-        "普通 Dr. GRPO，因此作为本项目最终方法；单个随机种子不足以判断统计显著性。"
-        if tail_dominates
-        else "- 频次加权存在指标回退，因此只作为受控消融，不作为最终模型。"
-    )
+    frequency_changes = {
+        "mae": _relative_change(standard["mae"], frequency_aware["mae"]),
+        "macro_mae": _relative_change(
+            standard["macro_mae"], frequency_aware["macro_mae"]
+        ),
+        "worst_group_mae": _relative_change(
+            standard["worst_group_mae"], frequency_aware["worst_group_mae"]
+        ),
+    }
+    no_regression = all(value <= 0 for value in frequency_changes.values())
+    any_improvement = any(value < 0 for value in frequency_changes.values())
+    if no_regression and any_improvement:
+        frequency_conclusion = (
+            "- 频次感知采样在预先指定的误差指标上至少有一项改进且没有回退，"
+            "但单个随机种子不足以判断统计显著性。"
+        )
+    elif all(abs(value) < 1e-12 for value in frequency_changes.values()):
+        frequency_conclusion = (
+            "- 两个 DPO adapter 的权重文件不同，但 1,017 条测试样本的贪心数值输出完全一致；"
+            "当前频次感知采样没有带来可测的生成增益。"
+        )
+    else:
+        frequency_conclusion = (
+            "- 频次感知采样存在指标回退，因此保留为受控消融，不把它写成无条件改进。"
+        )
     lines.extend(
         [
             "",
@@ -118,26 +125,31 @@ def build_markdown(
             f"相对 Base {_change_phrase(best_mae_change)}。",
             f"- 该模型的 Worst-group MAE={_number(best['worst_group_mae'], 4)}；"
             f"相对 Base {_change_phrase(best_worst_change)}。",
-            f"- Tail-aware 相对普通 Dr. GRPO：总体 MAE {_change_phrase(tail_mae_change)}，"
-            f"Macro-MAE {_change_phrase(tail_macro_change)}，"
-            f"Worst-group MAE {_change_phrase(tail_worst_change)}。",
-            tail_conclusion,
+            "- 频次感知 DPO 相对普通 DPO："
+            f"总体 MAE {_change_phrase(frequency_changes['mae'])}，"
+            f"Macro-MAE {_change_phrase(frequency_changes['macro_mae'])}，"
+            f"Worst-group MAE {_change_phrase(frequency_changes['worst_group_mae'])}。",
+            frequency_conclusion,
         ]
     )
-    comparison = matrix.get("comparisons", {}).get("tail_aware_minus_drgrpo", {})
+
+    comparison = matrix.get("comparisons", {}).get(
+        "frequency_aware_dpo_minus_dpo", {}
+    )
     if comparison:
         lines.extend(
             [
                 "",
                 "## 受控对比",
                 "",
-                "Tail-aware 相对普通 Dr. GRPO 的差值（负数表示误差降低）：",
+                "频次感知 DPO 相对普通 DPO 的差值（负数表示误差降低）：",
                 "",
                 f"- 总体 MAE：{_number(comparison['mae'], 4)}",
                 f"- Macro-MAE：{_number(comparison['macro_mae'], 4)}",
                 f"- Worst-group MAE：{_number(comparison['worst_group_mae'], 4)}",
             ]
         )
+
     lines.extend(
         [
             "",
@@ -156,8 +168,8 @@ def build_markdown(
     lines.extend(
         [
             "",
-            "> 论文数字只作为相同工业场景的已投稿 baseline。RLVR 项目额外过滤了"
-            "一条字段占位记录，因此二者不是完全相同的测试表，不能写成直接复现或公平胜负。",
+            "> 论文数字只作为相同工业场景的已投稿基线。DPO 项目额外过滤了一条字段占位记录，"
+            "两者不是完全相同的测试表，不能写成直接复现或公平胜负。",
             "",
         ]
     )
@@ -168,20 +180,15 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--matrix", type=Path, required=True)
     parser.add_argument(
-        "--paper-baselines",
-        type=Path,
-        default=Path("reports/paper_baselines.csv"),
+        "--paper-baselines", type=Path, default=Path("reports/paper_baselines.csv")
     )
     parser.add_argument(
-        "--output",
-        type=Path,
-        default=Path("reports/result_card.generated.md"),
+        "--output", type=Path, default=Path("reports/result_card.generated.md")
     )
     args = parser.parse_args()
     matrix = json.loads(args.matrix.read_text(encoding="utf-8"))
     markdown = build_markdown(
-        matrix,
-        paper_baselines=_paper_rows(args.paper_baselines),
+        matrix, paper_baselines=_paper_rows(args.paper_baselines)
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(markdown, encoding="utf-8")

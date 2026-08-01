@@ -1,44 +1,46 @@
 # Formal Experiment Provenance
 
-This file is a sanitized index of the private run manifests. It contains no
-row-level prompt, target, prediction or production value.
+This sanitized index contains no row-level prompt, target, prediction or production value. Timestamps are UTC.
 
 ## Training runs
-
-All timestamps are UTC. The training source-tree SHA256 covers project-owned
-Python, tests, YAML configs, shell entry points and dependency files.
 
 | Run | Session | Start | End | Samples | Peak MiB | Status |
 |---|---|---|---|---:|---:|---|
 | LoRA-SFT | `sft-sft_main-48350392257a` | 2026-07-29 17:33:24 | 2026-07-29 18:36:17 | 3,000 | 3511.09 | completed |
-| Dr. GRPO | `grpo-grpo_baseline-7d2e61f14f2a` | 2026-07-29 18:36:56 | 2026-07-29 18:48:36 | 1,500 | 2422.67 | completed |
-| Tail-aware Dr. GRPO | `grpo-grpo_tail_aware-ca05be7026f3` | 2026-07-29 18:49:07 | 2026-07-29 19:00:32 | 1,500 | 2391.78 | completed |
+| DPO | `dpo-dpo_baseline-60bd25026618` | 2026-08-01 08:17:46 | 2026-08-01 09:07:09 | 3,000 | 6620.30 | completed |
+| Frequency-aware DPO | `dpo-dpo_tail_aware-e01200fe962d` | 2026-08-01 09:07:33 | 2026-08-01 09:57:28 | 3,000 | 6620.30 | completed |
 
-Shared training source-tree SHA256:
+DPO training source-tree SHA256:
 
 ```text
-f583735af7384814b7fe0312427d9f4abaf65ed68a76088236d91404eb277e4b
+9a7f65fce87aaacf9b4d06a64c678534f7859d982bedf04f7ba6ae88a345ea12
 ```
 
 Config SHA256:
 
 ```text
-sft_main.yaml          a5c9fdd84e0ea5da00962d0ff14d1a7a0f27099dd17444601beab0eadbf58ed3
-grpo_baseline.yaml     03d2ae99e1841f384a5a79c37d57cf2f3816e55c7a5e05029229510ace433037
-grpo_tail_aware.yaml   25c14289b576d98857e3feb79de2924af2c14df2a56025ce2068c2ff3718d1fd
+dpo_baseline.yaml     7a313239038fd11cb6789e62ed41dff0236f8b84ac9bab66499663d1b0c1a30f
+dpo_tail_aware.yaml   14f1e70106bfc3ee6d0de8221dba98496758834039536be08d7d299b0b04eda9
 ```
 
-Data and ordered-selection SHA256:
+Preference artifacts:
 
 ```text
-train.jsonl            ef60984c117b8f5b6118e3e2272e160864e95254c20b44919e6d8af18fa0abc2
-validation.jsonl       7268251f77d0fe159602ba8a88c6b4511ea43538706388fd9086b7ce007561c1
-SFT ordered train IDs  544da8e199c0073ac4a7862ca84f77aeaa914e297a80e09ade83055d9fae7cef
-RL ordered train IDs   43fffe5d7da0d0cddc90a128ebc1dd0064f6186437dfb5759a904e06a5397cb9
+preferences_train.jsonl       bfeb77c489fbfedce0a47a1ae67954260d61e27e40b20fb7952459e1be84524b
+preferences_validation.jsonl  e16120c7346725b83ea8b70287becb7c63456b6293ea238d911ecc8ec97bf84a
+uniform ordered train IDs     8b8c3cada5e26c6378033bdd5f009631f38c04b1390591afd0c30fc6ff126d7e
+weighted ordered train IDs    69c1b096e979d55d5e9f70ab5abe651df91f5d0bbdf1dfcde398afc36c5da1d2
+shared validation IDs         7ce1ab00193da0b06468cfb3de2fd2eb49a279ab094afdfe18fc360629bb445c
 ```
 
-The identical RL ordered-ID hash is evidence that ordinary and tail-aware
-Dr. GRPO used the same 1,500 examples in the same order.
+The train-ID hashes intentionally differ because frequency-aware sampling changes the selected pair distribution. Pass quotas, pair count, seed and all optimizer settings remain controlled. Validation IDs and order are identical.
+
+Adapter SHA256:
+
+```text
+DPO                  07a1c3fe2daebd4193f0e18b526fd95337491ec4f2cbad5c2fdde339e450ebfa
+Frequency-aware DPO  d052e8e7ba34bae9193bf9e856d30a0c4b3477da1f039ff9d95c182258079a59
+```
 
 ## Final evaluation
 
@@ -48,21 +50,12 @@ All four evaluations used:
 base revision          a9a407bcae463285164cc9133995c515379cebe5
 test.jsonl              6922b193e3f7818549699862d04ecae2bbd9bc011b545b13049109ec75153a49
 ordered sample IDs      16688d7338105327588dcafe04f738d2b5d59041203a86c1994d8630e8113139
-evaluation source tree  ff61ca60d7a37395ae88a75692861d744990fa72b63602c1f0efc60838f2e3a2
+evaluation source tree  041ade8ebf1837af5d01412005cbbf956fcb883dddacb4f6ef8ec31c43419f85
 sample count            1,017
 ```
 
-`results/formal_evaluation_matrix.json` was accepted only after all four
-summaries agreed on these identifiers.
+`results/formal_evaluation_matrix.json` is generated only after all summaries agree on these identifiers.
 
-## Git history boundary
+## Git boundary
 
-The formal runs occurred while this project directory was still inside an
-uncommitted parent worktree. Their manifests therefore honestly record a null
-run commit and a dirty worktree; no historical commit was fabricated later.
-
-The independent public Git history begins with the reviewed release package
-after training and evaluation. The exact historical run identities remain the
-config, source-tree, data and ordered-ID hashes above. Later release-only files
-such as the data card, model card and release audit intentionally change the
-current whole-tree hash without changing the recorded model outputs.
+The DPO runs were executed from commit `7f9e6276ddcbcee0326433275932632632309ec1` with the new DPO implementation still uncommitted. The manifests record `dirty=true` and the exact source-tree hash; this release does not claim that the old commit contains the new code. Documentation and release-audit edits after evaluation may change the current whole-tree hash without changing recorded model outputs.

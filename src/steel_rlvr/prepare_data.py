@@ -1,4 +1,4 @@
-"""Build leakage-safe SFT/Dr. GRPO JSONL from the private rolling dataset."""
+"""Build leakage-safe SFT and evaluation JSONL from the private rolling dataset."""
 
 from __future__ import annotations
 

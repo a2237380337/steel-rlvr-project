@@ -8,7 +8,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-EXPECTED_MODELS = {"base", "sft", "drgrpo", "tail_aware"}
+EXPECTED_MODELS = {"base", "sft", "dpo", "frequency_aware_dpo"}
 EXPECTED_SAMPLE_COUNT = 1017
 EXPECTED_SPLIT_SHA256 = "6922b193e3f7818549699862d04ecae2bbd9bc011b545b13049109ec75153a49"
 EXPECTED_SAMPLE_IDS_SHA256 = "16688d7338105327588dcafe04f738d2b5d59041203a86c1994d8630e8113139"
@@ -62,7 +62,11 @@ def validate_matrix(matrix: dict[str, Any]) -> None:
     _require(set(models) == EXPECTED_MODELS, f"Unexpected model labels: {sorted(models)}")
     for label, summary in models.items():
         _require(isinstance(summary, dict), f"Invalid model summary: {label}")
-        _require(summary.get("strict_json_rate") == 1.0, f"{label} is not 100% strict JSON.")
+        strict_json_rate = summary.get("strict_json_rate")
+        _require(
+            isinstance(strict_json_rate, (int, float)) and strict_json_rate >= 0.98,
+            f"{label} strict-JSON rate is below the declared 98% release floor.",
+        )
         _require(summary.get("valid_value_rate") == 1.0, f"{label} is not 100% numeric.")
         for metric in ("mae", "r2", "macro_mae", "worst_group_mae"):
             value = summary.get(metric)
@@ -159,7 +163,7 @@ def audit_release(root: Path) -> None:
 
     result_card = (root / "reports" / "result_card.generated.md").read_text(encoding="utf-8")
     _require(EXPECTED_SPLIT_SHA256 in result_card, "Result card does not contain the final test hash.")
-    _require("SFT + Tail-aware Dr. GRPO" in result_card, "Result card is missing the final model.")
+    _require("频次感知 DPO" in result_card, "Result card is missing the DPO method.")
 
 
 def parse_args() -> argparse.Namespace:

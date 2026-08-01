@@ -1,11 +1,11 @@
 {
   "base_revision": "a9a407bcae463285164cc9133995c515379cebe5",
   "comparisons": {
-    "tail_aware_minus_drgrpo": {
-      "macro_mae": -0.004421729036768074,
-      "mae": -0.003244837758111574,
-      "strict_json_rate": 0.0,
-      "worst_group_mae": -0.025000000000000133
+    "frequency_aware_dpo_minus_dpo": {
+      "macro_mae": 0.0,
+      "mae": 0.0,
+      "strict_json_rate": -0.000983284169124854,
+      "worst_group_mae": 0.0
     }
   },
   "complete": true,
@@ -36,47 +36,78 @@
           "worst_group_mae": 1.6419261818181816
         }
       },
-      "peak_memory_mib": 1972.65,
+      "peak_memory_mib": 2799.25,
       "r2": -0.23128230834411467,
       "strict_json_rate": 1.0,
       "valid_value_rate": 1.0,
       "worst_group_mae": 1.6782898181818182
     },
-    "drgrpo": {
+    "dpo": {
       "base_revision": "a9a407bcae463285164cc9133995c515379cebe5",
-      "macro_mae": 0.7011320766790164,
-      "mae": 0.64700098328417,
-      "model_or_checkpoint": "artifacts/checkpoints/grpo-baseline",
+      "macro_mae": 0.7027818975492384,
+      "mae": 0.6487708947885943,
+      "model_or_checkpoint": "artifacts/checkpoints/dpo-baseline",
       "passes": {
         "Pass1": {
-          "macro_mae": 0.7094681418741003,
-          "mae": 0.6536873156342184,
-          "r2": -0.023274450498479426,
-          "worst_group_mae": 1.4000000000000001
+          "macro_mae": 0.7062177540337492,
+          "mae": 0.6513274336283188,
+          "r2": -0.015926859901314705,
+          "worst_group_mae": 1.375
         },
         "Pass2": {
-          "macro_mae": 0.696808720621858,
-          "mae": 0.650442477876106,
-          "r2": -0.019471638177269934,
-          "worst_group_mae": 1.2409090909090912
+          "macro_mae": 0.7036397657968393,
+          "mae": 0.6522123893805307,
+          "r2": -0.026676728786612314,
+          "worst_group_mae": 1.225
         },
         "Pass3": {
-          "macro_mae": 0.6971193675410912,
-          "mae": 0.6368731563421824,
-          "r2": -0.015462582774643518,
-          "worst_group_mae": 1.4
+          "macro_mae": 0.6984881728171266,
+          "mae": 0.6427728613569322,
+          "r2": -0.038977194905813084,
+          "worst_group_mae": 1.375
         }
       },
-      "peak_memory_mib": 2013.62,
-      "r2": -0.018598873108179204,
-      "strict_json_rate": 1.0,
+      "peak_memory_mib": 2837.67,
+      "r2": -0.02629394930261797,
+      "strict_json_rate": 0.9911504424778761,
       "valid_value_rate": 1.0,
-      "worst_group_mae": 1.4000000000000001
+      "worst_group_mae": 1.375
+    },
+    "frequency_aware_dpo": {
+      "base_revision": "a9a407bcae463285164cc9133995c515379cebe5",
+      "macro_mae": 0.7027818975492384,
+      "mae": 0.6487708947885943,
+      "model_or_checkpoint": "artifacts/checkpoints/dpo-tail-aware",
+      "passes": {
+        "Pass1": {
+          "macro_mae": 0.7062177540337492,
+          "mae": 0.6513274336283188,
+          "r2": -0.015926859901314705,
+          "worst_group_mae": 1.375
+        },
+        "Pass2": {
+          "macro_mae": 0.7036397657968393,
+          "mae": 0.6522123893805307,
+          "r2": -0.026676728786612314,
+          "worst_group_mae": 1.225
+        },
+        "Pass3": {
+          "macro_mae": 0.6984881728171266,
+          "mae": 0.6427728613569322,
+          "r2": -0.038977194905813084,
+          "worst_group_mae": 1.375
+        }
+      },
+      "peak_memory_mib": 2837.67,
+      "r2": -0.02629394930261797,
+      "strict_json_rate": 0.9901671583087512,
+      "valid_value_rate": 1.0,
+      "worst_group_mae": 1.375
     },
     "sft": {
       "base_revision": "a9a407bcae463285164cc9133995c515379cebe5",
-      "macro_mae": 0.7025701113633436,
-      "mae": 0.6484759095378567,
+      "macro_mae": 0.7029228749928474,
+      "mae": 0.6485742379547693,
       "model_or_checkpoint": "artifacts/checkpoints/sft-main",
       "passes": {
         "Pass1": {
@@ -92,45 +123,14 @@
           "worst_group_mae": 1.225
         },
         "Pass3": {
-          "macro_mae": 0.6978528142594421,
-          "mae": 0.6418879056047199,
-          "r2": -0.03693461207238524,
+          "macro_mae": 0.6989111051479537,
+          "mae": 0.6421828908554573,
+          "r2": -0.03648624023090097,
           "worst_group_mae": 1.375
         }
       },
-      "peak_memory_mib": 2013.62,
-      "r2": -0.02562267669842222,
-      "strict_json_rate": 1.0,
-      "valid_value_rate": 1.0,
-      "worst_group_mae": 1.375
-    },
-    "tail_aware": {
-      "base_revision": "a9a407bcae463285164cc9133995c515379cebe5",
-      "macro_mae": 0.6967103476422484,
-      "mae": 0.6437561455260584,
-      "model_or_checkpoint": "artifacts/checkpoints/grpo-tail-aware",
-      "passes": {
-        "Pass1": {
-          "macro_mae": 0.7065187257011446,
-          "mae": 0.6519174041297937,
-          "r2": -0.0170045065222324,
-          "worst_group_mae": 1.375
-        },
-        "Pass2": {
-          "macro_mae": 0.7028779485474137,
-          "mae": 0.6501474926253684,
-          "r2": -0.02020188384713606,
-          "worst_group_mae": 1.2500000000000002
-        },
-        "Pass3": {
-          "macro_mae": 0.6807343686781868,
-          "mae": 0.6292035398230086,
-          "r2": -0.004900934953016245,
-          "worst_group_mae": 1.375
-        }
-      },
-      "peak_memory_mib": 2013.62,
-      "r2": -0.013277809782236805,
+      "peak_memory_mib": 2837.67,
+      "r2": -0.025475324175549874,
       "strict_json_rate": 1.0,
       "valid_value_rate": 1.0,
       "worst_group_mae": 1.375
@@ -139,6 +139,6 @@
   "sample_count": 1017,
   "sample_ids_sha256": "16688d7338105327588dcafe04f738d2b5d59041203a86c1994d8630e8113139",
   "schema_version": 1,
-  "source_tree_sha256": "ff61ca60d7a37395ae88a75692861d744990fa72b63602c1f0efc60838f2e3a2",
+  "source_tree_sha256": "041ade8ebf1837af5d01412005cbbf956fcb883dddacb4f6ef8ec31c43419f85",
   "split_sha256": "6922b193e3f7818549699862d04ecae2bbd9bc011b545b13049109ec75153a49"
 }
