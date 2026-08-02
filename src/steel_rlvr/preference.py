@@ -106,6 +106,7 @@ def preference_indices(
     count: int,
     seed: int,
     tail_aware: bool,
+    weight_column: str | None = None,
 ) -> list[int]:
     """Select the same pass quota while optionally changing grade-frequency weights."""
 
@@ -123,10 +124,12 @@ def preference_indices(
         candidates = grouped[name]
         if len(candidates) < quota:
             raise ValueError(f"pass {name!r} cannot supply {quota} preference pairs")
-        weights = [
-            float(rows[index]["tail_sampling_weight"]) if tail_aware else 1.0
-            for index in candidates
-        ]
+        if weight_column is not None:
+            weights = [float(rows[index][weight_column]) for index in candidates]
+        elif tail_aware:
+            weights = [float(rows[index]["tail_sampling_weight"]) for index in candidates]
+        else:
+            weights = [1.0 for _ in candidates]
         selected.extend(
             _weighted_sample_indices(candidates, weights, count=quota, rng=rng)
         )

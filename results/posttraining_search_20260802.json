@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "date": "2026-08-02",
+  "selected_method": "frequency-aware online RLVR",
+  "base_model": "Qwen/Qwen3.5-0.8B-Base",
+  "base_revision": "a9a407bcae463285164cc9133995c515379cebe5",
+  "checkpoint": "artifacts/checkpoints/rlvr-tail-replication",
+  "checkpoint_adapter_sha256": "5908d432dee4db77e1f2f2c0c1624fb2abfd1acc803a9558a6874c068c97725b",
+  "training": {
+    "samples": 1500,
+    "pass_counts": {"Pass1": 500, "Pass2": 500, "Pass3": 500},
+    "steps": 200,
+    "num_generations": 4,
+    "learning_rate": 1e-6,
+    "temperature": 0.7,
+    "beta": 0.0,
+    "loss_type": "dr_grpo",
+    "reward_weights": [1.0, 0.05, 0.05],
+    "runtime_seconds": 571.7089,
+    "peak_accelerator_memory_mib": 2391.5,
+    "device": "AMD Radeon RX 7900 XT"
+  },
+  "model_selection_validation": {
+    "samples": 1536,
+    "split_sha256": "07fc164d1078d963d1ea35f9b9e506195573a33d85d92ee153bd9ba698b45089",
+    "sample_ids_sha256": "7533c6bccfc118dc5636afaf1091b3191a254c9ab55983b23ca46677fbbf47c3",
+    "source_tree_sha256": "1da6929ae6926e275e84d29116360aea315c5e408be5018518e0f488d4fbebcb",
+    "sft": {
+      "mae": 0.6500651041666686,
+      "r2": -0.1727516905472326,
+      "macro_mae": 0.6339604183633472,
+      "worst_group_mae": 1.85,
+      "strict_json_rate": 1.0
+    },
+    "rlvr": {
+      "mae": 0.6350260416666684,
+      "r2": -0.12206514929375345,
+      "macro_mae": 0.6210187809414317,
+      "worst_group_mae": 1.8,
+      "strict_json_rate": 1.0
+    },
+    "paired_bootstrap": {
+      "replicates": 20000,
+      "mean_delta_mae": -0.0150390625,
+      "relative_change_pct": -2.313470205307962,
+      "ci95": [-0.018684895833333336, -0.011393229166666666],
+      "tail_probability_delta_ge_zero": 0.0
+    }
+  },
+  "rare_grade_test_replication": {
+    "epistemic_status": "descriptive replication; not a fully blind test",
+    "samples": 1017,
+    "split_sha256": "6922b193e3f7818549699862d04ecae2bbd9bc011b545b13049109ec75153a49",
+    "sample_ids_sha256": "16688d7338105327588dcafe04f738d2b5d59041203a86c1994d8630e8113139",
+    "sft": {
+      "mae": 0.6485742379547693,
+      "r2": -0.025475324175549874,
+      "macro_mae": 0.7029228749928474,
+      "worst_group_mae": 1.375,
+      "strict_json_rate": 1.0
+    },
+    "rlvr": {
+      "mae": 0.643756145526057,
+      "r2": -0.012262714624673432,
+      "macro_mae": 0.6958783677002833,
+      "worst_group_mae": 1.4000000000000001,
+      "strict_json_rate": 1.0
+    },
+    "paired_bootstrap": {
+      "replicates": 20000,
+      "mean_delta_mae": -0.004818092428711893,
+      "relative_change_pct": -0.7428744693753782,
+      "ci95": [-0.008947885939036377, -0.0006882989183874085],
+      "tail_probability_delta_ge_zero": 0.0125
+    }
+  },
+  "failed_candidate": {
+    "method": "policy-hard-negative mixed preference optimization",
+    "validation_mae": 0.619531250000002,
+    "test_mae": 0.6898721730580154,
+    "conclusion": "improved common-grade validation but failed rare-grade transfer"
+  },
+  "statistical_confidence": "CAUTION",
+  "fallacy_scan": "11/11 checked"
+}

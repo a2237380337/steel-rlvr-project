@@ -1,0 +1,31 @@
+model_name_or_path: artifacts/checkpoints/sft-main
+model_revision: a9a407bcae463285164cc9133995c515379cebe5
+mixed_precision: bf16
+local_files_only: true
+
+train_file: data/processed/posttrain_hard_preferences_train.jsonl
+validation_file: data/processed/posttrain_hard_preferences_validation.jsonl
+preference_report_file: data/processed/policy_preference_report.json
+max_samples: 48
+validation_max_samples: 24
+output_dir: artifacts/checkpoints/mpo-hard-smoke
+
+max_length: 896
+max_steps: 2
+gradient_accumulation_steps: 2
+learning_rate: 5.0e-6
+warmup_ratio: 0.0
+lr_scheduler_type: cosine
+weight_decay: 0.01
+max_grad_norm: 1.0
+beta: 0.1
+loss_type: [sigmoid, sft]
+loss_weights: [0.2, 1.0]
+logging_steps: 1
+eval_steps: 1
+save_steps: 2
+save_total_limit: 1
+
+tail_aware_sampling: false
+sampling_weight_column: null
+seed: 151

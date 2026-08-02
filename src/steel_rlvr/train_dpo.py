@@ -66,6 +66,7 @@ def main() -> None:
         count=int(config["max_samples"]),
         seed=seed,
         tail_aware=bool(config["tail_aware_sampling"]),
+        weight_column=config.get("sampling_weight_column"),
     )
     train_dataset = train_dataset.select(selected_indices)
     validation_rows = [validation_dataset[index] for index in range(len(validation_dataset))]
@@ -151,7 +152,16 @@ def main() -> None:
         weight_decay=float(config["weight_decay"]),
         max_grad_norm=float(config["max_grad_norm"]),
         beta=float(config["beta"]),
-        loss_type=[str(config["loss_type"])],
+        loss_type=(
+            [str(value) for value in config["loss_type"]]
+            if isinstance(config["loss_type"], list)
+            else [str(config["loss_type"])]
+        ),
+        loss_weights=(
+            [float(value) for value in config["loss_weights"]]
+            if config.get("loss_weights") is not None
+            else None
+        ),
         bf16=use_bf16,
         fp16=use_fp16,
         eval_strategy="steps",

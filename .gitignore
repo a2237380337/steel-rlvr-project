@@ -14,6 +14,7 @@ artifacts/
 results/*
 !results/README.md
 !results/formal_evaluation_matrix.json
+!results/posttraining_search_20260802.json
 
 # Python/build caches
 __pycache__/

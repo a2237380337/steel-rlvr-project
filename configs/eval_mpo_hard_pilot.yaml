@@ -1,0 +1,13 @@
+model_or_checkpoint: artifacts/checkpoints/mpo-hard-pilot
+model_revision: a9a407bcae463285164cc9133995c515379cebe5
+mixed_precision: bf16
+local_files_only: true
+split_file: data/processed/posttrain_model_validation.jsonl
+data_report_file: data/processed/posttrain_split_report.json
+output_dir: artifacts/evals-posttrain/mpo-hard-pilot
+max_samples: 1536
+balanced_by_pass: true
+max_new_tokens: 32
+batch_size: 16
+logging_interval: 96
+seed: 157
